@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import json
+import os
 import time
 
 import execjs
@@ -294,18 +295,17 @@ citys = [
 
 
 def init_js():
-    with open("./crawler/main.js", "r") as f:
+    with open(os.path.join(os.path.dirname(__file__), "main.js"), "r") as f:
         jsfile = f.read()
     exjs = execjs.compile(jsfile)
     return exjs
 
 
-def get_address(fpdm: str, **kwargs):
+def get_address(fpdm: str):
     """
     获取请求地址
 
     :param fpdm: 发票代码
-    :param kwargs:
     :return:
     """
     if len(fpdm) == 12:
@@ -320,7 +320,7 @@ def get_address(fpdm: str, **kwargs):
     return address
 
 
-def get_yzm(exjs, fpdm: str, fphm: str, address: str, **kwargs):
+def get_yzm(exjs, fpdm: str, fphm: str, address: str):
     """
     获取验证码
 
@@ -328,7 +328,6 @@ def get_yzm(exjs, fpdm: str, fphm: str, address: str, **kwargs):
     :param fpdm: 发票代码
     :param fphm: 发票号码
     :param address: 请求地址
-    :param kwargs:
     :return:
     """
     nowtime = str(int(time.time() * 1000))
@@ -347,7 +346,8 @@ def get_yzm(exjs, fpdm: str, fphm: str, address: str, **kwargs):
         url=f"{address}/NWebQuery/yzmQuery",
         headers={
             "Connection": "keep-alive",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36 Edg/87.0.664.47",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/87.0.4280.67 Safari/537.36 Edg/87.0.664.47",
             "Accept": "*/*",
             "Sec-Fetch-Site": "same-site",
             "Sec-Fetch-Mode": "no-cors",
@@ -401,7 +401,7 @@ def get_yzm(exjs, fpdm: str, fphm: str, address: str, **kwargs):
         raise
 
 
-def main(fpdm: str, fphm: str, kprq: str, jym: str, address: str):
+def main(fpdm: str, fphm: str, kprq: str, jym: str):
     """
     获取验证码
 
@@ -409,10 +409,10 @@ def main(fpdm: str, fphm: str, kprq: str, jym: str, address: str):
     :param fphm: 发票号码
     :param kprq: 开票日期
     :param jym: 校验码
-    :param address: 请求地址
     :return:
     """
     exjs = init_js()
+    address = get_address(fpdm=fpdm)
     yzmsj, index, message, color, yzm, cookies = get_yzm(exjs=exjs, fpdm=fpdm, fphm=fphm, address=address)
     cy_key9 = exjs.call("cykey9", fpdm, fphm, yzmsj)
     params = {
@@ -436,7 +436,8 @@ def main(fpdm: str, fphm: str, kprq: str, jym: str, address: str):
         url=f"{address}/NWebQuery/vatQuery",
         headers={
             "Connection": "keep-alive",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/87.0.4280.66 Safari/537.36",
             "Accept": "*/*",
             "Sec-Fetch-Site": "same-site",
             "Sec-Fetch-Mode": "no-cors",
@@ -470,7 +471,6 @@ def main(fpdm: str, fphm: str, kprq: str, jym: str, address: str):
         if response.get("key5") != "1":
             result = "系统异常，请重试！(07)"
         else:
-            print("查询成功")
             result = response
             remark = response.get("key4").replace("≡", "\n")
             seller = response.get("key2").replace("≡", "\n")
@@ -494,14 +494,17 @@ if __name__ == "__main__":
         "kprq": "20191111",  # 开票日期
         "jym": "821713",  # 校验码后 6 位
     }
-    query_info["address"] = get_address(**query_info)
-    result = main(**query_info)
-    print(result)
+    res = main(**query_info)
+    print(res)
 
 # response = {
 #     "key1": "001",
-#     "key2": "4≡20191111≡江苏圆周电子商务有限公司北京分公司≡91110302585816506R≡北京经济技术开发区科创十一街18号C座2层223室 57807000≡交行北京海淀支行 110060576018150114912≡北方工业大学≡1211000040086596XB≡≡≡75477538000103821713≡0.00≡136.80≡≡661619994342≡136.80≡0≡≡",
-#     "key3": "*印刷品*图书███0.000█186.80000000█186.80█1.00000000█0.00█1█1060201019900000000≡*印刷品*图书███0.000██-50.00██0.00█1█1060201019900000000",
+#     "key2": "4≡20191111≡江苏圆周电子商务有限公司北京分公司≡91110302585816506R≡"
+#             "北京经济技术开发区科创十一街18号C座2层223室 57807000≡"
+#             "交行北京海淀支行 110060576018150114912≡北方工业大学≡1211000040086596XB"
+#             "≡≡≡75477538000103821713≡0.00≡136.80≡≡661619994342≡136.80≡0≡≡",
+#     "key3": "*印刷品*图书███0.000█186.80000000█186.80█1.00000000█0.00█1█1060201019900000000"
+#             "≡*印刷品*图书███0.000██-50.00██0.00█1█1060201019900000000",
 #     "key4": "订单号:106611696343",
 #     "key5": "1",
 # }

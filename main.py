@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from fastapi import FastAPI, Query
 
-from crawler.main import get_address, main
+from crawler.main import main
 
 tags_metadata = [
     {"name": "chinastax", "description": "国家税务总局全国增值税发票查验平台 API"},
@@ -23,12 +23,5 @@ async def chinastax(
     kprq: str = Query(None, example="20191111", description="开票日期"),
     jym: str = Query(None, example="821713", description="校验码后 6 位"),
 ):
-    query_info = {
-        "fpdm": fpdm,  # 发票代码
-        "fphm": fphm,  # 发票号码
-        "kprq": kprq,  # 开票日期
-        "jym": jym,  # 校验码后 6 位
-    }
-    query_info["address"] = get_address(**query_info)
-    result = main(**query_info)
+    result = main(fpdm=fpdm, fphm=fphm, kprq=kprq, jym=jym)
     return result

@@ -5,6 +5,8 @@ import os
 import pickle
 from enum import Enum, unique
 
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 import PIL.Image as PIL_Image
 import cv2
 import numpy as np
@@ -3837,10 +3839,10 @@ class GraphSession(object):
                 self.sess.run(tf.compat.v1.global_variables_initializer())
                 _ = tf.import_graph_def(self.graph_def, name="")
 
-            print("TensorFlow Session {} Loaded.".format(self.model_conf.model_name))
+            # print("TensorFlow Session {} Loaded.".format(self.model_conf.model_name))
             return True
         except NotFoundError:
-            print("The system cannot find the model specified.")
+            # print("The system cannot find the model specified.")
             self.destroy()
             return False
 

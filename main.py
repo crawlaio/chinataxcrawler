@@ -9,7 +9,6 @@ tags_metadata = [
 app = FastAPI(
     title="国家税务总局全国增值税发票查验平台 API",
     openapi_tags=tags_metadata,
-
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc",
     openapi_url="/api/v1/openapi.json",

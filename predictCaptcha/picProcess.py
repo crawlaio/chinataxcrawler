@@ -296,7 +296,7 @@ def predict_all_letter(picpath):
 def get_aim_letters(captcha_data):
     """
     获取目标条件字符
-    :param captcha_json: json数据 ，包括图片base64、目标颜色
+    :param captcha_data: json数据 ，包括图片base64、目标颜色
     :return aim_letter: 目标字符
     """
 

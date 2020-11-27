@@ -3,7 +3,6 @@ import binascii
 import io
 import os
 import pickle
-import time
 from enum import Enum, unique
 
 import PIL.Image as PIL_Image
@@ -3664,7 +3663,7 @@ class ModelConfig(object):
             source=self.model_field_param,
             param_map=MODEL_FIELD_MAP,
             text="Current model field ({model_field}) is not supported".format(model_field=self.model_field_param),
-            code=50002,
+            # code=50002,
         )
 
         self.model_scene_param: str = self.model_root.get("ModelScene")
@@ -3673,7 +3672,7 @@ class ModelConfig(object):
             source=self.model_scene_param,
             param_map=MODEL_SCENE_MAP,
             text="Current model scene ({model_scene}) is not supported".format(model_scene=self.model_scene_param),
-            code=50001,
+            # code=50001,
         )
 
         """SYSTEM"""
@@ -3728,7 +3727,7 @@ class ModelConfig(object):
             self.compile_model_path = ""
 
     @staticmethod
-    def param_convert(source, param_map: dict, text, code, default=None):
+    def param_convert(source, param_map: dict, text, default=None):
         if source is None:
             return default
         if source not in param_map.keys():

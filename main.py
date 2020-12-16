@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import uvicorn
 from fastapi import FastAPI, Query
 
 from crawler.main import main
@@ -24,3 +25,13 @@ async def chinastax(
 ):
     result = main(fpdm=fpdm, fphm=fphm, kprq=kprq, jym=jym)
     return result
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        app="main:app",
+        host="0.0.0.0",
+        port=8000,
+        debug=True,
+        reload=True,
+    )
